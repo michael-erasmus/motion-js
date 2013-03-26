@@ -19,6 +19,24 @@ class JSController < UIViewController
     @finished_loading = nil
   end
 
+  def execute_async(js_string, &block)
+    @callback = block
+    value = execute(js_string)
+  end
+
+  def webView(view, shouldStartLoadWithRequest:request, navigationType:type)
+    request_string = request.URL.absoluteString.stringByReplacingPercentEscapesUsingEncoding(NSUTF8StringEncoding)
+
+    if(request_string.hasPrefix("js-bridge-frame"))
+      components = request_string.split('::')
+      callback_id, return_val = components[1], components[2]
+
+      @callback.call return_val
+      return false
+    end
+    true
+  end
+
   private
   def web_view
     @web_view ||= UIWebView.alloc.init.tap do |w|

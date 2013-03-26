@@ -5,9 +5,11 @@
   <title>WebView Document</title>
   <script src='js/nativeBridge.js'></script>
   <script>
-    function definedInIndex(){
+    var definedInIndex = function(){
       return "present!";
     }
+
+    var square = function(n){nativeBridge.call('squareResult', n * n);}
   </script>
 </head>
 <body></body>

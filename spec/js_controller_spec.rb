@@ -30,4 +30,14 @@ describe "JSController" do
     end
   end
 
+  describe "#execute_async" do
+    it "works" do
+      @controller.load_html_file do
+        @controller.execute_async("square(5)") do |n|
+          n.should == "25"
+        end
+      end
+      RunLoopHelpers.proper_wait 1
+    end
+  end
 end

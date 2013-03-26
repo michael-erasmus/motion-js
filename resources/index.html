@@ -9,7 +9,16 @@
       return "present!";
     }
 
-    var square = function(n){nativeBridge.call('squareResult', n * n);}
+    var square = function(n){ return n * n;}
+
+    var longSquare = function(n){
+      //Run it lots of times, just to make sure :)
+      for (var i=0;i<9999;i++)
+      {
+        var val = square(n);
+      }
+      return val;
+    };
   </script>
 </head>
 <body></body>

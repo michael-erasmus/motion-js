@@ -4,7 +4,6 @@ class JSController < UIViewController
   end
 
   def load_html_file(name='index', &block)
-
     path  = NSBundle.mainBundle.pathForResource(name, ofType:'html')
     raise IOError unless NSFileManager.defaultManager.fileExistsAtPath(path)
     file_url = NSURL.fileURLWithPath(path)
@@ -20,8 +19,10 @@ class JSController < UIViewController
   end
 
   def execute_async(js_string, &block)
-    @callback = block
-    value = execute(js_string)
+    id = create_uuid
+    @callbacks ||= {}
+    @callbacks[id] = block
+    execute async_js(js_string, id)
   end
 
   def webView(view, shouldStartLoadWithRequest:request, navigationType:type)
@@ -31,7 +32,7 @@ class JSController < UIViewController
       components = request_string.split('::')
       callback_id, return_val = components[1], components[2]
 
-      @callback.call return_val
+      @callbacks[callback_id].call return_val
       return false
     end
     true
@@ -42,6 +43,22 @@ class JSController < UIViewController
     @web_view ||= UIWebView.alloc.init.tap do |w|
       w.delegate = self
     end
+  end
+
+  def async_js(js_string, id)
+    js = <<-oes
+      var callBackId = '#{id}';
+      var result = #{js_string};
+
+      nativeBridge.call(callBackId, result);
+    oes
+  end
+
+  def create_uuid
+    uuid = CFUUIDCreate(nil)
+    uuid_string = CFUUIDCreateString(nil, uuid)
+    CFRelease(uuid)
+    uuid_string
   end
 
 end

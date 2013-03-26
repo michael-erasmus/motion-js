@@ -21,7 +21,7 @@ describe "JSController" do
         loaded = true
         @controller.execute("definedInIndex()").should == "present!"
       end
-      RunLoopHelpers.proper_wait 1
+      RunLoopHelpers.proper_wait 3
       loaded.should == true
     end
 
@@ -32,12 +32,35 @@ describe "JSController" do
 
   describe "#execute_async" do
     it "works" do
-      @controller.load_html_file do
+     @controller.load_html_file do
         @controller.execute_async("square(5)") do |n|
           n.should == "25"
         end
       end
       RunLoopHelpers.proper_wait 1
     end
+
+    it "can run multiple functions at once" do
+      return_count = 0
+      @controller.load_html_file do
+        @controller.execute_async("square(5)") do |n|
+          n.should == "25"
+          return_count += 1
+        end
+      end
+      RunLoopHelpers.proper_wait 1
+      return_count.should == 1
+
+      @controller.load_html_file do
+        @controller.execute_async("longSquare(3)") do |n|
+          n.should == "9"
+          return_count += 1
+        end
+      end
+      RunLoopHelpers.proper_wait 3
+      return_count.should == 2
+
+    end
   end
+
 end

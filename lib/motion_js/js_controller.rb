@@ -3,9 +3,25 @@ class JSController < UIViewController
     web_view.stringByEvaluatingJavaScriptFromString(js_string)
   end
 
+  def load_html_file(name='index', &block)
+    path  = NSBundle.mainBundle.pathForResource('index', ofType:'html')
+    file_url = NSURL.fileURLWithPath(path)
+    request = NSURLRequest.requestWithURL(file_url)
+
+    @finished_loading = block
+    web_view.loadRequest(request)
+  end
+
+  def webViewDidFinishLoad(webView)
+    @finished_loading.call if @finished_loading
+    @finished_loading = nil
+  end
+
   private
   def web_view
-    @web_view ||= UIWebView.alloc.init.tap{|w| w.delegate = self}
+    @web_view ||= UIWebView.alloc.init.tap do |w|
+      w.delegate = self
+    end
   end
 
 end

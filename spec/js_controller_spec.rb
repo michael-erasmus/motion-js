@@ -22,4 +22,7 @@ describe "JSController" do
     loaded.should == true
   end
 
+  it "complains when trying to load a file that's not there" do
+    -> { @controller.load_html_file("nothere")}.should.raise IOError
+  end
 end

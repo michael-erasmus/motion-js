@@ -4,7 +4,9 @@ class JSController < UIViewController
   end
 
   def load_html_file(name='index', &block)
-    path  = NSBundle.mainBundle.pathForResource('index', ofType:'html')
+
+    path  = NSBundle.mainBundle.pathForResource(name, ofType:'html')
+    raise IOError unless NSFileManager.defaultManager.fileExistsAtPath(path)
     file_url = NSURL.fileURLWithPath(path)
     request = NSURLRequest.requestWithURL(file_url)
 

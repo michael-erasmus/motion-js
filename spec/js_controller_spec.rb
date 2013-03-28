@@ -63,4 +63,17 @@ describe "JSController" do
     end
   end
 
+  describe "js initiated calls" do
+    it "works" do
+      @controller.load_html_file do
+        @controller.js_handler_for('foo') do |result|
+          result.should == "bar"
+        end
+
+        @controller.execute('foo()')
+      end
+
+      RunLoopHelpers.proper_wait 1
+    end
+  end
 end

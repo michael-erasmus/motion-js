@@ -13,6 +13,10 @@ class JSController < UIViewController
     web_view.loadRequest(request)
   end
 
+  def js_handler_for(id, &block)
+    callbacks[id] = block
+  end
+
   def webViewDidFinishLoad(webView)
     @finished_loading.call if @finished_loading
     @finished_loading = nil
@@ -20,8 +24,7 @@ class JSController < UIViewController
 
   def execute_async(js_string, &block)
     id = create_uuid
-    @callbacks ||= {}
-    @callbacks[id] = block
+    js_handler_for(id, &block)
     execute async_js(js_string, id)
   end
 
@@ -32,7 +35,7 @@ class JSController < UIViewController
       components = request_string.split('::')
       callback_id, return_val = components[1], components[2]
 
-      @callbacks[callback_id].call return_val
+      callbacks[callback_id].call return_val if @callbacks[callback_id]
       return false
     end
     true
@@ -59,6 +62,10 @@ class JSController < UIViewController
     uuid_string = CFUUIDCreateString(nil, uuid)
     CFRelease(uuid)
     uuid_string
+  end
+
+  def callbacks
+    @callbacks ||= {}
   end
 
 end

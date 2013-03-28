@@ -35,7 +35,7 @@ class JSController < UIViewController
       components = request_string.split('::')
       callback_id, return_val = components[1], components[2]
 
-      callbacks[callback_id].call return_val if @callbacks[callback_id]
+      callbacks[callback_id].call return_val if callbacks[callback_id]
       return false
     end
     true

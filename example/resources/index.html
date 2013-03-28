@@ -4,7 +4,11 @@
   <meta charset="utf-8" / >
   <title>WebView Document</title>
   <script src='js/nativeBridge.js'></script>
-  <!-- Include libraries or custom app scripts here -->
+  <script>
+    var nativeAlert = function(message) {
+      nativeBridge.call("nativeAlert", message);
+    }
+  </script>
 </head>
 <body></body>
 </html>
